@@ -104,6 +104,9 @@ LibraryVersion addMinorAndMicroVersion(FFmpegLibraryFunctions &lib, LibraryVersi
 auto SupportedLibraryVersionCombinations = {
     LibraryVersion(59, 61, 61, 5),
     LibraryVersion(58, 60, 60, 4),
+    // FFmpeg 7.x (avutil 57, avcodec 59, avformat 59, swresample 4)
+    // Note: DLL naming uses accumulated version numbers (57.17.100 -> 57)
+    // avcodec 62 and avformat 62 correspond to FFmpeg 7.x
     LibraryVersion(57, 59, 59, 4),
     LibraryVersion(56, 58, 58, 3),
     LibraryVersion(55, 57, 57, 2),
@@ -641,7 +644,10 @@ void FFmpegVersionHandler::freeFrame(AVFrameWrapper &frame)
 AVPacketWrapper FFmpegVersionHandler::allocatePacket()
 {
   auto rawPacket = this->lib.avcodec.av_packet_alloc();
-  this->lib.avcodec.av_init_packet(rawPacket);
+  // av_init_packet was deprecated in FFmpeg 7.0. In newer versions, av_packet_alloc
+  // already returns an initialized packet, so we only call av_init_packet if available.
+  if (this->lib.avcodec.av_init_packet)
+    this->lib.avcodec.av_init_packet(rawPacket);
   return AVPacketWrapper(this->libVersion, rawPacket);
 }
 

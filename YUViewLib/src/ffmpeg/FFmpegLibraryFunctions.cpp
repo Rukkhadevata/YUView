@@ -108,6 +108,10 @@ bool bindLibraryFunctions(QLibrary &                                lib,
     return false;
   if (!resolveFunction(lib, functions.avcodec_version, "avcodec_version", log))
     return false;
+
+  // av_init_packet was deprecated in FFmpeg 7.0 and is no longer required.
+  // It may return false if the symbol is not found, which is fine for FFmpeg 7+.
+  resolveFunction(lib, functions.av_init_packet, "av_init_packet", log);
   if (!resolveFunction(lib, functions.avcodec_get_name, "avcodec_get_name", log))
     return false;
   if (!resolveFunction(lib, functions.avcodec_parameters_alloc, "avcodec_parameters_alloc", log))
