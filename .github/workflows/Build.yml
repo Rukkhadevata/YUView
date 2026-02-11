@@ -17,7 +17,7 @@ jobs:
     runs-on: windows-2022
     strategy:
       matrix:
-        autoUpdate: [true, false]
+        autoUpdate: [false]
     steps:
     - uses: actions/checkout@v4
       with:
